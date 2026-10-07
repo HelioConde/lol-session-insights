@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b11">
+  <meta name="description" content="LoL Session Insights agrupa partidas recentes em sessões e mostra como seu desempenho muda do início ao fim de cada bloco de jogo.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LoL Session Insights — entenda suas sessões">
+  <meta property="og:description" content="Veja ritmo, consistência, trocas de campeão e tendência de desempenho ao longo das suas sessões recentes de League of Legends.">
+  <meta property="og:url" content="https://helioconde.github.io/lol-session-insights/">
+  <link rel="canonical" href="https://helioconde.github.io/lol-session-insights/">
+  <title>LoL Session Insights — entenda suas sessões</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark">SI</span><span>Session <b>Insights</b></span></a>
+    <div class="top-actions">
+      <span class="live-badge" id="source-badge">DADOS RIOT</span>
+      <button class="ghost small" id="language-toggle" type="button" aria-label="Mudar idioma">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="eyebrow">LEAGUE OF LEGENDS · SESSÕES RECENTES</p>
+        <h1 data-i18n="heroTitle">Uma partida conta o resultado. <span>A sessão conta o padrão.</span></h1>
+        <p data-i18n="heroText">Agrupe suas partidas recentes por blocos de jogo e veja quando o desempenho estabiliza, melhora ou cai — sem transformar um jogo ruim em diagnóstico.</p>
+
+        <form class="lookup" id="lookup-form">
+          <label class="riot-id-field">
+            <span data-i18n="riotId">Riot ID</span>
+            <input id="riot-id" name="riotId" autocomplete="off" placeholder="Nome#TAG" required>
+          </label>
+          <label>
+            <span data-i18n="server">Servidor</span>
+            <select id="server" name="server">
+              <option value="br1">BR</option><option value="na1">NA</option><option value="euw1">EUW</option>
+              <option value="eun1">EUNE</option><option value="kr">KR</option><option value="jp1">JP</option>
+              <option value="la1">LAN</option><option value="la2">LAS</option><option value="oc1">OCE</option>
+            </select>
+          </label>
+          <button class="primary" type="submit" data-i18n="analyze">Analisar sessões</button>
+        </form>
+
+        <div class="lookup-meta">
+          <span data-i18n="privacy">Consulta pública via backend server-side. Nenhuma chave Riot fica no navegador.</span>
+          <button class="text-button" id="recent-toggle" type="button" data-i18n="recent">Buscas recentes</button>
+        </div>
+        <div class="recent-searches" id="recent-searches" hidden></div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </div>
+
+      <aside class="hero-card">
+        <p class="eyebrow" data-i18n="whatChanges">O QUE MUDA NA SESSÃO</p>
+        <div class="signal-preview">
+          <article><span>01</span><div><strong data-i18n="signal1">Começo x fim</strong><small data-i18n="signal1Text">KDA, mortes e resultado ao longo do bloco.</small></div></article>
+          <article><span>02</span><div><strong data-i18n="signal2">Troca de rota/campeão</strong><small data-i18n="signal2Text">Quando você muda o plano no meio da sessão.</small></div></article>
+          <article><span>03</span><div><strong data-i18n="signal3">Duração e ritmo</strong><small data-i18n="signal3Text">Quantas partidas e quanto tempo você ficou jogando.</small></div></article>
+        </div>
+      </aside>
+    </section>
+
+    <section class="loading shell" id="loading" hidden>
+      <div class="spinner"></div>
+      <div><strong data-i18n="loadingTitle">Lendo suas partidas recentes…</strong><span data-i18n="loadingText">A primeira consulta pode demorar um pouco enquanto o backend busca e coloca partidas em cache.</span></div>
+    </section>
+
+    <section class="result shell" id="result" hidden>
+      <div class="player-head">
+        <div>
+          <p class="eyebrow" data-i18n="analysis">ANÁLISE DE SESSÃO</p>
+          <h2 id="player-name">—</h2>
+          <p id="sample-note" class="muted"></p>
+        </div>
+        <div class="filter-group" role="group" aria-label="Filtro de modo">
+          <button class="filter active" type="button" data-filter="ALL" data-i18n="allModes">Todos</button>
+          <button class="filter" type="button" data-filter="RANKED">Ranked</button>
+          <button class="filter" type="button" data-filter="NORMAL">Normal</button>
+          <button class="filter" type="button" data-filter="ARAM">ARAM</button>
+          <button class="filter" type="button" data-filter="ARENA">Arena</button>
+        </div>
+      </div>
+
+      <section class="metrics">
+        <article><span data-i18n="sessions">Sessões</span><strong id="metric-sessions">—</strong><small data-i18n="sessionsHelp">blocos detectados</small></article>
+        <article><span data-i18n="avgGames">Média por sessão</span><strong id="metric-games">—</strong><small data-i18n="avgGamesHelp">partidas por bloco</small></article>
+        <article><span data-i18n="longest">Mais longa</span><strong id="metric-longest">—</strong><small data-i18n="longestHelp">partidas seguidas</small></article>
+        <article><span data-i18n="stable">Sessões estáveis</span><strong id="metric-stable">—</strong><small data-i18n="stableHelp">sem queda forte no fim</small></article>
+      </section>
+
+      <section class="content-grid">
+        <section class="panel sessions-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow" data-i18n="timeline">LINHA DO TEMPO</p><h3 data-i18n="recentSessions">Sessões recentes</h3></div>
+            <span class="muted" id="session-count"></span>
+          </div>
+          <div class="session-list" id="session-list"></div>
+        </section>
+
+        <aside class="panel insight-panel">
+          <div class="panel-head"><div><p class="eyebrow" data-i18n="latest">SESSÃO MAIS RECENTE</p><h3 data-i18n="latestTitle">Como ela terminou?</h3></div></div>
+          <div id="latest-insight" class="latest-insight empty"></div>
+          <div class="ad-slot"><span data-i18n="ad">PUBLICIDADE</span><small data-i18n="adNote">espaço reservado · fora da leitura principal</small></div>
+        </aside>
+      </section>
+
+      <section class="panel match-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow" data-i18n="matchesEyebrow">PARTIDAS DA SESSÃO</p><h3 id="match-panel-title" data-i18n="selectSession">Selecione uma sessão</h3></div>
+          <span class="muted" id="match-panel-meta"></span>
+        </div>
+        <div id="match-list" class="match-list"></div>
+      </section>
+
+      <section class="method">
+        <div><p class="eyebrow" data-i18n="methodEyebrow">COMO CALCULAMOS</p><h3 data-i18n="methodTitle">Sinais, não rótulos.</h3></div>
+        <p data-i18n="methodText">Partidas com menos de 90 minutos entre si entram no mesmo bloco. A tendência compara começo e fim usando KDA, mortes e resultado recente. Isso descreve a amostra; não mede “tilt”, habilidade ou estado emocional.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <div><strong>LoL Session Insights</strong><span data-i18n="riotDisclaimer">Produto independente. League of Legends e Riot Games são marcas da Riot Games, Inc.</span></div>
+    <nav><a href="sobre.html" data-i18n="about">Sobre</a><a href="privacidade.html" data-i18n="privacyLink">Privacidade</a><a href="termos.html" data-i18n="terms">Termos</a></nav>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="backend-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
