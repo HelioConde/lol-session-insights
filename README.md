@@ -71,10 +71,13 @@ Caso o Pages ainda não esteja ativo:
 - [x] SEO básico;
 - [x] QA estático;
 - [ ] GitHub Pages confirmado;
-- [ ] Browser E2E;
+- [x] Browser E2E;
 - [ ] validação com 3+ Riot IDs/regiões;
 - [ ] revisar sessões longas e sessões de apenas 1 partida;
 - [ ] validar ARAM/Arena/Ranked separadamente.
+
+
+> Browser E2E automatizado no GitHub Actions foi adicionado em 07/10/2026. O que resta neste gate é validação publicada/real e revisão dos casos específicos listados abaixo.
 
 ## V2 — somente após validação
 
