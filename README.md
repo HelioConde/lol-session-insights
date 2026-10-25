@@ -1,5 +1,17 @@
 # LoL Session Insights
 
+**Analise sessões de League of Legends em vez de interpretar cada partida isoladamente.**
+
+Agrupe partidas próximas no tempo, observe mudanças de campeão ou função e compare indicadores do começo e do fim de uma sessão.
+
+**Dados:** histórico recente disponibilizado pelo backend gamer, com seleção de Riot ID e filtros de modalidade.
+
+> Tendência de KDA, mortes ou resultados **não mede humor, fadiga ou tilt**. A ferramenta descreve números observáveis, não faz diagnósticos.
+
+![Status](https://img.shields.io/badge/status-em%20evolução-64748b)
+
+---
+
 Produto League of Legends do **Ideias IA Lab** para analisar comportamento ao longo de blocos de jogo, em vez de olhar apenas partidas isoladas.
 
 ## Estado atual
