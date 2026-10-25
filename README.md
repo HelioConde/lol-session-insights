@@ -1,114 +1,55 @@
-# LoL Session Insights
+<div align="center">
+  <h1>⏱️ LoL Session Insights</h1>
+  <p><strong>Entenda um bloco inteiro de partidas de League of Legends, em vez de analisar um jogo isolado.</strong></p>
+  <p><img alt="Status" src="https://img.shields.io/badge/status-MVP%20em%20valida%C3%A7%C3%A3o-64748b"></p>
+</div>
 
-**Analise sessões de League of Legends em vez de interpretar cada partida isoladamente.**
+## Uma sessão conta mais que uma partida?
 
-Agrupe partidas próximas no tempo, observe mudanças de campeão ou função e compare indicadores do começo e do fim de uma sessão.
+**LoL Session Insights** agrupa partidas recentes em sessões e compara o que aconteceu do início ao fim do bloco. O objetivo é identificar mudanças observáveis: campeões, rotas, KDA, mortes, resultados e duração.
 
-**Dados:** histórico recente disponibilizado pelo backend gamer, com seleção de Riot ID e filtros de modalidade.
+**Importante:** nenhum desses indicadores diagnostica fadiga, humor, intenção ou *tilt*. A ferramenta descreve dados da amostra, sem tirar conclusões psicológicas.
 
-> Tendência de KDA, mortes ou resultados **não mede humor, fadiga ou tilt**. A ferramenta descreve números observáveis, não faz diagnósticos.
+## Como consultar
 
-![Status](https://img.shields.io/badge/status-em%20evolução-64748b)
+1. Informe Riot ID e região.
+2. Escolha um modo de jogo: Todos, Ranked, Normal, ARAM ou Arena, conforme disponibilidade.
+3. Explore as sessões agrupadas pelo intervalo entre partidas.
+4. Compare o começo com o fim de cada sessão e veja a lista de partidas.
+5. Use os indicadores como pontos de partida para uma revisão manual.
 
----
+| Métrica | Interpretação |
+| --- | --- |
+| **Sessão** | Grupo de partidas próximas, usando janela de até 90 minutos entre jogos |
+| **Volume** | Quantidade e duração de partidas da sessão |
+| **Mudanças** | Campeão e rota utilizados |
+| **Desempenho** | KDA médio, mortes médias e resultados |
+| **Tendência** | Sinal descritivo de melhor / estável / pior na amostra |
 
-Produto League of Legends do **Ideias IA Lab** para analisar comportamento ao longo de blocos de jogo, em vez de olhar apenas partidas isoladas.
+O backend `public-lol-profile` fornece uma amostra de **até 40 partidas recentes** na implementação documentada. Uma sessão parcialmente fora dessa janela pode parecer mais curta que a sessão real.
+
+## Executar
+
+```bash
+git clone https://github.com/HelioConde/lol-session-insights.git
+cd lol-session-insights
+python -m http.server 8000
+```
+
+Abra `http://localhost:8000`. Para QA com Node.js:
+
+```bash
+npm install
+npm run check
+npm run test:e2e
+```
+
+A chave Riot fica no backend; não a publique no navegador. O frontend não garante disponibilidade permanente dos serviços externos.
 
 ## Estado atual
 
-MVP funcional iniciado em 07/10/2026.
+**MVP funcional descrito no repositório, em validação.** Prioridades: testar sessões de uma partida e sessões longas, comparar modalidades separadamente e validar diferentes Riot IDs/regiões.
 
-## O que já funciona
+[**Histórico técnico e QA anterior**](docs/README_HISTORY_2026-10-25.md) · [**Ideias IA Lab**](https://github.com/HelioConde/ideias-ia-lab)
 
-- busca por Riot ID + servidor;
-- backend gamer compartilhado via \`public-lol-profile\`;
-- até 40 partidas recentes;
-- agrupamento automático em sessões com intervalo máximo de 90 minutos;
-- filtros por Todos, Ranked, Normal, ARAM e Arena;
-- comparação do começo x fim de cada sessão;
-- tendência de desempenho com sinal **melhor / estável / pior**;
-- KDA médio e mortes médias;
-- duração total em jogo;
-- trocas de campeão;
-- trocas de rota;
-- campeão mais usado na sessão;
-- lista de partidas da sessão;
-- buscas recentes em localStorage;
-- deep link com Riot ID e servidor;
-- PT-BR principal + inglês;
-- páginas Sobre, Privacidade e Termos;
-- layout preparado para anúncios sem bloquear a leitura;
-- Static QA.
-
-## Interpretação
-
-O produto **não diagnostica tilt, fadiga, humor, intenção ou habilidade**.
-
-A tendência compara apenas sinais observáveis da amostra recente — principalmente KDA, mortes e resultado — entre começo e fim do bloco.
-
-## Backend
-
-Fonte:
-
-\`https://bieihhaobdztjyoweewa.supabase.co/functions/v1/public-lol-profile\`
-
-A integração Riot continua server-side. Nenhuma chave de API fica no navegador.
-
-## QA
-
-Execute:
-
-\`npm run check\`
-
-## Deploy
-
-O workflow **Deploy GitHub Pages** está preparado.
-
-Caso o Pages ainda não esteja ativo:
-
-1. Settings → Pages
-2. Build and deployment
-3. Source → GitHub Actions
-
-## Gate antes de expandir
-
-- [x] proposta de valor clara;
-- [x] dados Riot reais;
-- [x] fluxo principal;
-- [x] filtros principais;
-- [x] loading/erro/sucesso;
-- [x] PT-BR/EN;
-- [x] mobile;
-- [x] páginas institucionais;
-- [x] SEO básico;
-- [x] QA estático;
-- [ ] GitHub Pages confirmado;
-- [x] Browser E2E;
-- [ ] validação com 3+ Riot IDs/regiões;
-- [ ] revisar sessões longas e sessões de apenas 1 partida;
-- [ ] validar ARAM/Arena/Ranked separadamente.
-
-
-> Browser E2E automatizado no GitHub Actions foi adicionado em 07/10/2026. O que resta neste gate é validação publicada/real e revisão dos casos específicos listados abaixo.
-
-> Smoke de produção foi adicionado em 07/10/2026 para validar a integração externa sem misturar esse gate ao E2E mockado. O workflow precisa ficar verde antes de encerrar o MVP.
-
-## V2 — somente após validação
-
-- comparação entre dias da semana;
-- horário do dia;
-- histórico persistido de sessões;
-- evolução por patch;
-- alertas pessoais baseados no próprio histórico;
-- compartilhamento visual;
-- integração opcional com outros produtos gamer.
-
-## Compliance
-
-Produto independente e não endossado pela Riot Games.
-
-League of Legends e Riot Games são marcas de seus respectivos titulares.
-
-Planejamento geral:
-
-https://github.com/HelioConde/ideias-ia-lab
+Projeto não oficial, independente de Riot Games. Desenvolvido por [Hélio Conde](https://github.com/HelioConde).
